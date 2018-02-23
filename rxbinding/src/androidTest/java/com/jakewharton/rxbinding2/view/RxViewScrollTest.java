@@ -40,6 +40,7 @@ public final class RxViewScrollTest {
     o.assertNoMoreEvents();
 
     view.scrollTo(1, 1);
+    // Awaiting async ui update is needed here
     ViewScrollChangeEvent event0 = o.takeNext();
     assertSame(view, event0.view());
     assertEquals(1, event0.scrollX());
@@ -48,6 +49,7 @@ public final class RxViewScrollTest {
     assertEquals(0, event0.oldScrollY());
 
     view.scrollTo(2, 2);
+    // Awaiting async ui update is needed here
     ViewScrollChangeEvent event1 = o.takeNext();
     assertSame(view, event1.view());
     assertEquals(2, event1.scrollX());
@@ -57,6 +59,7 @@ public final class RxViewScrollTest {
 
     o.dispose();
     view.scrollTo(3, 3);
+    // Awaiting async ui update is needed here
     o.assertNoMoreEvents();
   }
 }

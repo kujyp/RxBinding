@@ -1,7 +1,6 @@
 package com.jakewharton.rxbinding2.view;
 
 import android.support.annotation.RequiresApi;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
@@ -22,7 +21,6 @@ final class ViewScrollChangeEventObservableCompat extends Observable<ViewScrollC
 
   @Override
   protected void subscribeActual(Observer<? super ViewScrollChangeEvent> observer) {
-    Log.d(TAG, "subscribeActual: ");
     if (!checkMainThread(observer)) {
       return;
     }
@@ -31,7 +29,6 @@ final class ViewScrollChangeEventObservableCompat extends Observable<ViewScrollC
   }
 
   private void setOnScrollChangeListenerWith(final View v, final Listener listener) {
-    Log.d(TAG, "setOnScrollChangeListenerWith: ");
     ViewTreeObserver viewTreeObserver = v.getViewTreeObserver();
     viewTreeObserver.addOnScrollChangedListener(
             new ViewTreeObserver.OnScrollChangedListener() {
@@ -39,7 +36,6 @@ final class ViewScrollChangeEventObservableCompat extends Observable<ViewScrollC
 
               @Override
               public void onScrollChanged() {
-                Log.d(TAG, "onScrollChanged: ");
                 listener.onScrollChange(v, v.getScrollX(), v.getScrollY(), oldl, oldt);
                 oldl = v.getScrollX();
                 oldt = v.getScrollY();
