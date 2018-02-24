@@ -1,6 +1,7 @@
 package com.jakewharton.rxbinding2.view;
 
-import android.support.test.annotation.UiThreadTest;
+import android.app.Instrumentation;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -12,6 +13,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -25,7 +28,8 @@ public final class RxViewScrollTest {
   @Rule public final ActivityTestRule<RxViewScrollTestActivity> activityRule =
           new ActivityTestRule<>(RxViewScrollTestActivity.class);
 
-  View view;
+  private final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+  private View view;
 
   @Before
   public void setUp() {
@@ -34,13 +38,20 @@ public final class RxViewScrollTest {
   }
 
   @SdkSuppress(minSdkVersion = 19)
-  @Test @UiThreadTest public void scrollChangeEvents() {
+  @Test public void scrollChangeEvents() {
     RecordingObserver<ViewScrollChangeEvent> o = new RecordingObserver<>();
-    RxView.scrollChangeEvents(view).subscribe(o);
+    RxView.scrollChangeEvents(view)
+            .subscribeOn(AndroidSchedulers.mainThread())
+            .subscribe(o);
     o.assertNoMoreEvents();
 
-    view.scrollTo(1, 1);
-    // Awaiting async ui update is needed here
+
+    instrumentation.runOnMainSync(
+            new Runnable() {
+              @Override public void run() {
+                view.scrollTo(1, 1);
+              }
+            });
     ViewScrollChangeEvent event0 = o.takeNext();
     assertSame(view, event0.view());
     assertEquals(1, event0.scrollX());
@@ -48,8 +59,12 @@ public final class RxViewScrollTest {
     assertEquals(0, event0.oldScrollX());
     assertEquals(0, event0.oldScrollY());
 
-    view.scrollTo(2, 2);
-    // Awaiting async ui update is needed here
+    instrumentation.runOnMainSync(
+            new Runnable() {
+              @Override public void run() {
+                view.scrollTo(2, 2);
+              }
+            });
     ViewScrollChangeEvent event1 = o.takeNext();
     assertSame(view, event1.view());
     assertEquals(2, event1.scrollX());
@@ -58,8 +73,12 @@ public final class RxViewScrollTest {
     assertEquals(1, event1.oldScrollY());
 
     o.dispose();
-    view.scrollTo(3, 3);
-    // Awaiting async ui update is needed here
+    instrumentation.runOnMainSync(
+            new Runnable() {
+              @Override public void run() {
+                view.scrollTo(3, 3);
+              }
+            });
     o.assertNoMoreEvents();
   }
 }
