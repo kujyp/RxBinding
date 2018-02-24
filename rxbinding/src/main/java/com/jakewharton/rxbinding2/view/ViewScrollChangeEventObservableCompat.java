@@ -12,7 +12,6 @@ import static com.jakewharton.rxbinding2.internal.Preconditions.checkMainThread;
 
 @RequiresApi(19)
 final class ViewScrollChangeEventObservableCompat extends Observable<ViewScrollChangeEvent> {
-  private static final String TAG = ViewScrollChangeEventObservableCompat.class.getSimpleName();
   private final View view;
 
   ViewScrollChangeEventObservableCompat(View view) {
@@ -25,6 +24,7 @@ final class ViewScrollChangeEventObservableCompat extends Observable<ViewScrollC
       return;
     }
     Listener listener = new Listener(view, observer);
+    observer.onSubscribe(listener);
     setOnScrollChangeListenerWith(view, listener);
   }
 
